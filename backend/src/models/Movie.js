@@ -19,7 +19,7 @@ const movieSchema = new mongoose.Schema({
     required: true,
   },
   duration: {
-    type: Number, // in minutes
+    type: String, // Changed to String as requested earlier
     required: true,
   },
   posterUrl: {
@@ -53,7 +53,7 @@ const movieSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-});
+}, { collection: 'movies' }); // Explicitly set collection name to 'movies'
 
 // Update the updatedAt timestamp before saving
 movieSchema.pre('save', function(next) {

@@ -10,7 +10,7 @@ interface Movie {
   description: string;
   genre: string[];
   releaseYear: number;
-  duration: number;
+  duration: string;
   posterUrl: string;
   videoUrl: string;
   featured: boolean;
@@ -21,6 +21,7 @@ export default function AdminPage() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -85,9 +86,17 @@ export default function AdminPage() {
       }
 
       const formDataToSend = new FormData();
+      
+      // Handle each field with proper type checking
       Object.entries(formData).forEach(([key, value]) => {
         if (value !== null) {
-          formDataToSend.append(key, value);
+          if (value instanceof File) {
+            formDataToSend.append(key, value);
+          } else if (typeof value === 'boolean') {
+            formDataToSend.append(key, value.toString());
+          } else {
+            formDataToSend.append(key, value as string);
+          }
         }
       });
 
@@ -98,6 +107,10 @@ export default function AdminPage() {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data',
+          },
+          onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1));
+            setUploadProgress(percentCompleted);
           },
         }
       );
@@ -112,10 +125,10 @@ export default function AdminPage() {
         poster: null,
         video: null,
       });
-
+      setUploadProgress(0);
       fetchMovies();
-    } catch (error) {
-      setError('Error uploading movie');
+    } catch (error: any) {
+      setError(error.response?.data?.message || 'Error uploading movie');
     }
   };
 
@@ -160,6 +173,18 @@ export default function AdminPage() {
           </div>
 
           <div>
+            <label className="block mb-2">Description</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              className="w-full p-2 rounded bg-primary border border-gray-600"
+              rows={3}
+              required
+            />
+          </div>
+
+          <div>
             <label className="block mb-2">Genre (comma-separated)</label>
             <input
               type="text"
@@ -167,6 +192,7 @@ export default function AdminPage() {
               value={formData.genre}
               onChange={handleInputChange}
               className="w-full p-2 rounded bg-primary border border-gray-600"
+              placeholder="Action, Drama, Sci-Fi"
               required
             />
           </div>
@@ -179,82 +205,83 @@ export default function AdminPage() {
               value={formData.releaseYear}
               onChange={handleInputChange}
               className="w-full p-2 rounded bg-primary border border-gray-600"
+              min="1900"
+              max={new Date().getFullYear()}
               required
             />
           </div>
 
           <div>
-            <label className="block mb-2">Duration (minutes)</label>
+            <label className="block mb-2">Duration</label>
             <input
-              type="number"
+              type="text"
               name="duration"
               value={formData.duration}
               onChange={handleInputChange}
               className="w-full p-2 rounded bg-primary border border-gray-600"
-              required
-            />
-          </div>
-
-          <div className="md:col-span-2">
-            <label className="block mb-2">Description</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              className="w-full p-2 rounded bg-primary border border-gray-600"
-              rows={4}
+              placeholder="2h 30m"
               required
             />
           </div>
 
           <div>
-            <label className="block mb-2">Poster</label>
+            <label className="block mb-2">Featured</label>
+            <input
+              type="checkbox"
+              name="featured"
+              checked={formData.featured}
+              onChange={handleInputChange}
+              className="w-4 h-4"
+            />
+          </div>
+
+          <div>
+            <label className="block mb-2">Poster Image</label>
             <input
               type="file"
               name="poster"
               onChange={handleFileChange}
-              accept="image/*"
               className="w-full p-2 rounded bg-primary border border-gray-600"
+              accept="image/*"
               required
             />
           </div>
 
           <div>
-            <label className="block mb-2">Video</label>
+            <label className="block mb-2">Video File</label>
             <input
               type="file"
               name="video"
               onChange={handleFileChange}
-              accept="video/*"
               className="w-full p-2 rounded bg-primary border border-gray-600"
+              accept="video/*"
               required
             />
           </div>
-
-          <div className="md:col-span-2">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                name="featured"
-                checked={formData.featured}
-                onChange={handleInputChange}
-                className="mr-2"
-              />
-              Featured Movie
-            </label>
-          </div>
         </div>
+
+        {uploadProgress > 0 && (
+          <div className="mt-4">
+            <div className="w-full bg-gray-200 rounded-full h-2.5">
+              <div
+                className="bg-blue-600 h-2.5 rounded-full"
+                style={{ width: `${uploadProgress}%` }}
+              ></div>
+            </div>
+            <p className="text-sm text-gray-500 mt-1">Upload Progress: {uploadProgress}%</p>
+          </div>
+        )}
 
         <button
           type="submit"
-          className="mt-6 bg-accent text-white px-6 py-2 rounded hover:bg-red-700 transition-colors"
+          className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
         >
           Upload Movie
         </button>
       </form>
 
-      <div>
-        <h2 className="text-2xl font-semibold mb-6">Manage Movies</h2>
+      <div className="mt-8">
+        <h2 className="text-2xl font-semibold mb-6">Uploaded Movies</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {movies.map((movie) => (
             <div key={movie._id} className="bg-secondary p-4 rounded-lg">
@@ -264,15 +291,11 @@ export default function AdminPage() {
                 className="w-full h-48 object-cover rounded mb-4"
               />
               <h3 className="text-xl font-semibold mb-2">{movie.title}</h3>
-              <p className="text-gray-400 text-sm mb-2">
-                {movie.genre.join(', ')} • {movie.releaseYear}
-              </p>
-              <p className="text-gray-400 text-sm mb-4">
-                Duration: {movie.duration} minutes
-              </p>
+              <p className="text-gray-400 mb-2">{movie.genre.join(', ')}</p>
+              <p className="text-gray-400 mb-4">{movie.releaseYear}</p>
               <button
                 onClick={() => handleDelete(movie._id)}
-                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
+                className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700"
               >
                 Delete
               </button>
