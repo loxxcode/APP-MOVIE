@@ -1,0 +1,241 @@
+/* Global styles */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Animation styles */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.95); }
+  to { transform: scale(1); }
+}
+
+/* Transition styles */
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+.transition-colors {
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.transition-transform {
+  transition: transform 0.3s ease;
+}
+
+/* Border radius styles */
+.rounded {
+  border-radius: 0.375rem; /* 6px */
+}
+
+.rounded-lg {
+  border-radius: 0.5rem; /* 8px */
+}
+
+.rounded-xl {
+  border-radius: 0.75rem; /* 12px */
+}
+
+/* Main container */
+.main-container {
+  min-height: 100vh;
+  padding: 2rem;
+  animation: fadeIn 0.5s ease;
+}
+
+/* Header styles */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  animation: fadeIn 0.6s ease;
+}
+
+.header-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--accent-color);
+}
+
+/* Navigation styles */
+.nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-link {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: var(--accent-color);
+}
+
+/* Section styles */
+.section {
+  margin-bottom: 3rem;
+  animation: scaleUp 0.5s ease;
+}
+
+.section-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+/* Movie grid styles */
+.movie-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(1, 1fr);
+}
+
+@media (min-width: 768px) {
+  .movie-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .movie-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .movie-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Movie card styles */
+.movie-card {
+  background-color: var(--secondary-color);
+  border-radius: 0.5rem; /* rounded-lg */
+  overflow: hidden;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeIn 0.5s ease;
+}
+
+.movie-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.movie-poster {
+  position: relative;
+  aspect-ratio: 16/9;
+  background-color: #1f2937;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+.movie-poster-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.movie-info {
+  padding: 1rem;
+}
+
+.movie-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.movie-meta {
+  color: #9ca3af;
+  font-size: 0.875rem;
+}
+
+/* Icon styles */
+.icon {
+  font-size: 1.5rem;
+  color: var(--accent-color);
+  transition: transform 0.2s ease;
+}
+
+.movie-card:hover .icon {
+  transform: scale(1.1);
+}
+
+/* CSS variables for theming */
+:root {
+  --accent-color: #3b82f6; /* Example accent color - blue-500 */
+  --secondary-color: #1e293b; /* Example secondary color - slate-800 */
+}
+ @media (min-width: 480px) {
+          .movies-grid {
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+          }
+          
+          .movie-title {
+            font-size: 1rem;
+          }
+          
+          .movie-meta, .rating {
+            font-size: 0.8rem;
+          }
+        }
+        
+        @media (min-width: 768px) {
+          .main-container {
+            padding: 2rem;
+          }
+          
+          .logo {
+            font-size: 2.2rem;
+          }
+          
+          .section-title {
+            font-size: 2rem;
+          }
+          
+          .movies-grid {
+            gap: 1.5rem;
+          }
+        }
+        
+        @media (min-width: 1024px) {
+          .movies-grid {
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+          }
+        }
+        
+        @media (max-width: 768px) {
+          .navigation {
+            display: none;
+          }
+          
+          .mobile-menu-button {
+            display: block;
+          }
+          
+          .header {
+            padding: 0.5rem 0;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .main-container {
+            padding: 0.8rem;
+          }
+          
+          .section-title {
+            font-size: 1.5rem;
+          }
+        }

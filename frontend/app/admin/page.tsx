@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import './admin.css';
 
 interface Movie {
   _id: string;
@@ -37,6 +38,11 @@ export default function AdminPage() {
   useEffect(() => {
     fetchMovies();
   }, []);
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    router.push('/login');
+  };
 
   const fetchMovies = async () => {
     try {
@@ -154,155 +160,146 @@ export default function AdminPage() {
   if (error) return <div className="p-8 text-red-500">{error}</div>;
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
+  <div className="admin-container">
+    <h1 className="admin-title">Admin Dashboard</h1>
+    <button onClick={handleLogout} className="logout-btn">
+      Logout
+    </button>
+    
 
-      <form onSubmit={handleSubmit} className="mb-12 bg-secondary p-6 rounded-lg">
-        <h2 className="text-2xl font-semibold mb-6">Upload New Movie</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block mb-2">Title</label>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleInputChange}
-              className="w-full p-2 rounded bg-primary border border-gray-600"
-              required
-            />
-          </div>
+    <form onSubmit={handleSubmit} className="admin-form">
+      <h2 className="form-title">Upload New Movie</h2>
+      <div className="form-grid">
+        <div className="form-group">
+          <label className="form-label">Title</label>
+          <input
+            type="text"
+            name="title"
+            value={formData.title}
+            onChange={handleInputChange}
+            className="form-input"
+            required
+          />
+        </div>
 
-          <div>
-            <label className="block mb-2">Description</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              className="w-full p-2 rounded bg-primary border border-gray-600"
-              rows={3}
-              required
-            />
-          </div>
+        <div className="form-group">
+          <label className="form-label">Genre (comma-separated)</label>
+          <input
+            type="text"
+            name="genre"
+            value={formData.genre}
+            onChange={handleInputChange}
+            className="form-input"
+            required
+          />
+        </div>
 
-          <div>
-            <label className="block mb-2">Genre (comma-separated)</label>
-            <input
-              type="text"
-              name="genre"
-              value={formData.genre}
-              onChange={handleInputChange}
-              className="w-full p-2 rounded bg-primary border border-gray-600"
-              placeholder="Action, Drama, Sci-Fi"
-              required
-            />
-          </div>
+        <div className="form-group">
+          <label className="form-label">Release Year</label>
+          <input
+            type="number"
+            name="releaseYear"
+            value={formData.releaseYear}
+            onChange={handleInputChange}
+            className="form-input"
+            required
+          />
+        </div>
 
-          <div>
-            <label className="block mb-2">Release Year</label>
-            <input
-              type="number"
-              name="releaseYear"
-              value={formData.releaseYear}
-              onChange={handleInputChange}
-              className="w-full p-2 rounded bg-primary border border-gray-600"
-              min="1900"
-              max={new Date().getFullYear()}
-              required
-            />
-          </div>
+        <div className="form-group">
+          <label className="form-label">Duration (minutes)</label>
+          <input
+            type="number"
+            name="duration"
+            value={formData.duration}
+            onChange={handleInputChange}
+            className="form-input"
+            required
+          />
+        </div>
 
-          <div>
-            <label className="block mb-2">Duration</label>
-            <input
-              type="text"
-              name="duration"
-              value={formData.duration}
-              onChange={handleInputChange}
-              className="w-full p-2 rounded bg-primary border border-gray-600"
-              placeholder="2h 30m"
-              required
-            />
-          </div>
+        <div className="form-group md-col-span-2">
+          <label className="form-label">Description</label>
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleInputChange}
+            className="form-textarea"
+            rows={4}
+            required
+          />
+        </div>
 
-          <div>
-            <label className="block mb-2">Featured</label>
+        <div className="form-group">
+          <label className="form-label">Poster</label>
+          <input
+            type="file"
+            name="poster"
+            onChange={handleFileChange}
+            accept="image/*"
+            className="form-input"
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Video</label>
+          <input
+            type="file"
+            name="video"
+            onChange={handleFileChange}
+            accept="video/*"
+            className="form-input"
+            required
+          />
+        </div>
+
+        <div className="form-group md-col-span-2">
+          <label className="form-label flex items-center">
             <input
               type="checkbox"
               name="featured"
               checked={formData.featured}
               onChange={handleInputChange}
-              className="w-4 h-4"
+              className="form-checkbox"
             />
-          </div>
-
-          <div>
-            <label className="block mb-2">Poster Image</label>
-            <input
-              type="file"
-              name="poster"
-              onChange={handleFileChange}
-              className="w-full p-2 rounded bg-primary border border-gray-600"
-              accept="image/*"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block mb-2">Video File</label>
-            <input
-              type="file"
-              name="video"
-              onChange={handleFileChange}
-              className="w-full p-2 rounded bg-primary border border-gray-600"
-              accept="video/*"
-              required
-            />
-          </div>
-        </div>
-
-        {uploadProgress > 0 && (
-          <div className="mt-4">
-            <div className="w-full bg-gray-200 rounded-full h-2.5">
-              <div
-                className="bg-blue-600 h-2.5 rounded-full"
-                style={{ width: `${uploadProgress}%` }}
-              ></div>
-            </div>
-            <p className="text-sm text-gray-500 mt-1">Upload Progress: {uploadProgress}%</p>
-          </div>
-        )}
-
-        <button
-          type="submit"
-          className="mt-6 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
-        >
-          Upload Movie
-        </button>
-      </form>
-
-      <div className="mt-8">
-        <h2 className="text-2xl font-semibold mb-6">Uploaded Movies</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {movies.map((movie) => (
-            <div key={movie._id} className="bg-secondary p-4 rounded-lg">
-              <img
-                src={movie.posterUrl}
-                alt={movie.title}
-                className="w-full h-48 object-cover rounded mb-4"
-              />
-              <h3 className="text-xl font-semibold mb-2">{movie.title}</h3>
-              <p className="text-gray-400 mb-2">{movie.genre.join(', ')}</p>
-              <p className="text-gray-400 mb-4">{movie.releaseYear}</p>
-              <button
-                onClick={() => handleDelete(movie._id)}
-                className="bg-red-600 text-white px-4 py-1 rounded hover:bg-red-700"
-              >
-                Delete
-              </button>
-            </div>
-          ))}
+            Featured Movie
+          </label>
         </div>
       </div>
+
+      <button type="submit" className="form-submit">
+        Upload Movie
+      </button>
+    </form>
+
+    <div>
+      <h2 className="manage-title">Manage Movies</h2>
+      <div className="movies-grid">
+        {movies.map((movie) => (
+          <div key={movie._id} className="movie-card">
+            <img
+              src={movie.posterUrl}
+              alt={movie.title}
+              className="movie-poster"
+            />
+            <h3 className="movie-name">{movie.title}</h3>
+            <p className="movie-meta">
+              {movie.genre.join(', ')} • {movie.releaseYear}
+            </p>
+            <p className="movie-meta">
+              Duration: {movie.duration} minutes
+            </p>
+            <button
+              onClick={() => handleDelete(movie._id)}
+              className="delete-btn"
+            >
+              Delete
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
-  );
+  </div>
+);
 } 
